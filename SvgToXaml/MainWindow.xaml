@@ -1,0 +1,116 @@
+﻿<Window x:Class="SvgToXaml.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:explorer="clr-namespace:SvgToXaml.Explorer"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:viewModels="clr-namespace:SvgToXaml.ViewModels"
+        xmlns:wrapPanel="clr-namespace:SvgToXaml.WrapPanel"
+        mc:Ignorable="d" 
+        Title="SvgToXaml   © 2015 Bernd Klaiber" Height="350" Width="525"
+        AllowDrop="True"
+        Drop="MainWindow_OnDrop"
+        Icon="icon.ico"
+        d:DataContext="{x:Static viewModels:SvgImagesViewModel.DesignInstance}">
+    <Window.Resources>
+        <DrawingImage x:Key="SaveDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M512,512z M0,0z M146.365,243.417L196.529,243.417 196.529,200.195 315.468,200.195 315.468,243.417 365.634,243.417 255.999,353.243 146.365,243.417z M196.529,123.862L315.468,123.862 315.468,93.028 196.529,93.028 196.529,123.862z M345.469,85.095L345.469,131.409C388.036,160.522 414.93,208.679 414.93,262.805 414.93,305.258 398.399,345.168 368.381,375.186 338.363,405.204 298.452,421.735 256,421.735 213.549,421.735 173.638,405.204 143.62,375.186 113.601,345.168 97.07,305.258 97.07,262.805 97.07,208.805 123.864,160.59 166.529,131.41L166.529,85.095C101.604,117.849 57.07,185.122 57.07,262.806 57.07,372.673 146.134,461.736 256,461.736 365.867,461.736 454.93,372.674 454.93,262.806 454.93,185.12 410.396,117.847 345.469,85.095z M315.469,180.195L315.469,143.862 196.529,143.862 196.529,180.195 315.469,180.195z M315.469,73.028L315.469,50.265 196.529,50.265 196.529,73.029 315.469,73.029z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="169*"/>
+            <ColumnDefinition Width="3"></ColumnDefinition>
+            <ColumnDefinition Width="348*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <Button DockPanel.Dock="Right" Width="20" Margin="1,3" Command="{Binding InfoCommand}" TabIndex="2" ToolTip="Info">i</Button>
+            <Slider x:Name="Slider" Orientation="Horizontal" DockPanel.Dock="Right" Minimum="16" Maximum="500" Value="96" 
+                        LargeChange="8" SmallChange="2" Width="100" VerticalAlignment="Center"/>
+            <Button DockPanel.Dock="Right" Width="20" Margin="1,3" Command="{Binding ExportDirCommand}" TabIndex="2" ToolTip="Export all Svgs to a Xaml">
+                <Image Source="{StaticResource SaveDrawingImage}" />
+            </Button>
+            <Button DockPanel.Dock="Right" Width="20" Margin="1,3" Command="{Binding OpenFolderCommand}" TabIndex="2" ToolTip="Open Folder">...</Button>
+            <TextBox Margin="3" Text="{Binding CurrentDir, Mode=TwoWay}" TabIndex="1"/>
+        </DockPanel>
+        <explorer:FolderTree x:Name="FolderTree" Grid.Row="1" CurrentFolder="{Binding CurrentDir, Mode=TwoWay}" TabIndex="3" ContextMenuCommands="{Binding ContextMenuCommands}"></explorer:FolderTree>
+        <GridSplitter Grid.Column="1" Grid.Row="1" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Width="3"></GridSplitter>
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="212*"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <ListBox Grid.Row="0" 
+                     SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                     SelectionMode="Single"
+                     ItemsSource="{Binding Images}" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <!--<WrapPanel Orientation="Horizontal"/>-->
+                        <wrapPanel:VirtualizingWrapPanel ItemWidth="{Binding ElementName=Slider, Path=Value}" ItemHeight="{Binding ElementName=Slider, Path=Value}">
+
+                        </wrapPanel:VirtualizingWrapPanel>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:ImageBaseViewModel}">
+                        <Border x:Name="GraphicBorder" BorderThickness="1" BorderBrush="MediumBlue"
+                            Width="{Binding Path='ActualWidth', ElementName='Bd'}" Height="{Binding Path='ActualHeight', ElementName='Bd'}">
+                            <Grid  ToolTip="{Binding Filename}">
+                                <!--<Button Style="{StaticResource FlatButton}">
+                                <Image Source="{Binding PreviewSource}"></Image>
+                                <Button.InputBindings>
+                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenDetailCommand}" />
+                                </Button.InputBindings>
+                            </Button>-->
+
+                                <Image Source="{Binding PreviewSource}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Image.InputBindings>
+                                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenDetailCommand}" />
+                                    </Image.InputBindings>
+                                </Image>
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <ContextMenu.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Background="{x:Static SystemColors.MenuBarBrush}"/>
+                                            </ItemsPanelTemplate>
+                                        </ContextMenu.ItemsPanel>
+                                        <MenuItem Header="Open File" Command="{Binding OpenFileCommand}" Padding="-20,2,-15,2"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                            </Grid>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding HasSvg}" Value="true">
+                                <Setter TargetName="GraphicBorder" Property="BorderThickness" Value="0"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <DockPanel Grid.Row="2">
+                <Grid DockPanel.Dock="Bottom">
+                    <DockPanel Grid.Row="0">
+                        <Button DockPanel.Dock="Right" Width="20" Margin="1,3" Command="{Binding OpenFileCommand}" ToolTip="Open File">...</Button>
+                        <TextBox IsReadOnly="True" Margin="2,3" Text="{Binding SelectedItem.Filepath, Mode=OneWay}"></TextBox>
+                    </DockPanel>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Window>
