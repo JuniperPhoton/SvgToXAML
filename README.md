@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # SvgToXaml
 Smart tool to view svg-files and convert them to xaml for use in .NET
 There are 3 major use cases:
@@ -46,6 +46,4 @@ after adding more new icons, just run the command again and the new icons will a
 For each Icon the colors, paths, a drawingimage are created (with resource-keys) so you can use them as you like.
 You can change the color of all icons at once (like theming your app) or you can change all the color of the icons separately (see the sample app included in the sources).
 =======
-# SvgToXAML
-Fork of SvgToXAML
->>>>>>> ad9a1f7f4fc5ce08a96f6a98bdcf31ee703fc65b
+
